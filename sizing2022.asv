@@ -33,4 +33,3 @@ F_thrust = F_drag + mtow*groundaccel; %N, minimum required, likely an underrepre
 T_to_W = F_thrust./(mtow*g);
 
 %% Tail Sizing
-
