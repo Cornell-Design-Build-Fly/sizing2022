@@ -4,6 +4,7 @@ clc
 
 %% Constants and conversion factors
 m2ft = 3.281;
+m2in = 3.281*12;
 mtow = 4; %kg (to vary)
 to_dist = 40/m2ft; %meters
 g = 9.81;%m/s^2
@@ -25,10 +26,7 @@ S=144*(mtow*kg2oz/wcl)^(2/3)*sqin2sqm; %from https://www.sefsd.org/general-inter
 b=sqrt(S*ar); %AR = b^2/S
 b_in = b*m2ft*12;
 c = b/ar; %For a rectangular wing
-max_fuselage_width = 0.2*b; %by comp rules
-max_fuselage_width_in = 0.2*b*m2ft*12;
-fuselage_width = 8/m2in;
-mfw_in = max_fuselage_width*m2ft*12;
+
 w_by_airfoils = c*max_thickness*4;
 
 l_box = b/2; %m
@@ -44,7 +42,34 @@ F_drag = 0.5*rho*S*vto.^2.*cd0; %N, Neglects drag due to fuselage
 F_thrust = F_drag + mtow*groundaccel; %N, minimum required, likely an underrepresentation
 T_to_W = F_thrust./(mtow*g);
 
+%% Fuselage
+totalLength = 0.75*b; %estimated from last year lmao
+max_fuselage_width = 0.2*b; %by comp rules
+max_fuselage_width_in = 0.2*b*m2ft*12;
+fuselage_width = 7/m2in; %7 inch (to be confirmed by mech)
+fuselage_length = 1.6*mtow^0.23; %From Raymer pg 157, this is bad for us ;-;
+mfw_in = max_fuselage_width*m2ft*12;
+
 %% Tail Sizing
 Vv = 0.04; % Vertical tail volume ratio from Raymer Aircraft Design pg. 160
 Vh = 0.7; % ^, but for hortizontal stab
+tailarm = 1.1 ;%0.67*totalLength; %estimated from last year lmao
+Sv = Vv*b*S/tailarm; %From Raymer pg. 159
+Sh = Vh*c*S/tailarm; %From Raymer pg. 159
+ARh = 3;
+ARv = 1.5;
 
+b_h = sqrt(Sh*ARh);
+c_h = b_h/ARh;
+
+lambdav = 0.7;
+
+nvtail = 1;
+if (nvtail == 1)
+    b_v = sqrt(Sv*ARv);
+else
+    b_v = sqrt(0.5*Sv*ARv);
+end
+cv_root = 2*b_v/(ARv*(1+lambdav));
+
+%.5087
